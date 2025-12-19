@@ -55,7 +55,7 @@ loan-default-prediction/
 🚀 Quick Start
 Installation
 bash# Clone the repository
-git clone https://github.com/your-username/loan-default-prediction.git
+git clone https://github.com/Czco9r-angelo/loan-default-prediction.git
 cd loan-default-prediction
 
 # Install dependencies
