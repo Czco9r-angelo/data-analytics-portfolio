@@ -12,7 +12,7 @@
 
 Developed and deployed a comprehensive Business Intelligence and financial reporting system for a **World Bank-funded agricultural development program** in Malawi. The system integrates multiple data sources, automates donor reporting workflows, and provides real-time financial insights to program management and international stakeholders.
 
-**Organization:** AGCOM Malawi (Agricultural Commodity Exchange for Africa)  
+**Organization:** AGCOM Malawi (Agricultural Commercialisation Africa)  
 **Program:** Multi-million dollar agricultural resilience project  
 **Duration:** July 2025 - Present  
 **Role:** Finance Intern & BI Developer
@@ -26,7 +26,7 @@ Developed and deployed a comprehensive Business Intelligence and financial repor
 - **Multiple disconnected data sources** (3 cashbook systems)
 - **No real-time visibility** into program expenditure
 - **Data quality issues** affecting donor reporting
-- **Complex budget structure** with 277 budget codes across multiple project components
+- **Complex budget structure** with over 300 budget codes across multiple project components
 - **World Bank compliance requirements** for detailed financial reporting
 
 ### The Impact
@@ -151,7 +151,7 @@ in NBS, causing 90%+ overlap. Exclusion ensures data integrity.
 | **Expenditure Analysis** | Detailed spending patterns | Category breakdown, variance analysis | Finance Team |
 | **Supplier Intelligence** | Vendor performance | Top suppliers, concentration risk | Procurement Team |
 | **Cashier Performance** | Disbursement monitoring | Subsistence tracking, outliers | Operations Team |
-| **Activity Tracking** | Budget code monitoring | 277 codes across activities | Finance & Management |
+| **Activity Tracking** | Budget code monitoring | 300+ codes across activities | Finance & Management |
 | **Data Quality Report** | Validation dashboard | Exception tracking, priority flags | Data Governance |
 | **Financial Statements** | SoRP & SoFP | Donor compliance reporting | World Bank, Management |
 
@@ -216,7 +216,7 @@ Developed comprehensive **Power BI migration guide** (1,887 lines) to transition
 
 **3. Strategic Insights**
 - Real-time visibility into program expenditure patterns
-- Component-level budget tracking across 277 codes
+- Component-level budget tracking across 300+ codes
 - Supplier concentration risk monitoring
 - Cash flow forecasting capabilities
 
@@ -374,8 +374,8 @@ graph LR
 ### 3. Budget Variance Tracking
 
 **Real-time Monitoring:**
-- 277 budget codes across program
-- Component-level rollup (24 components)
+- 300+ budget codes across program
+- Component-level rollup (6 components with 13 sub-components)
 - Activity-level detail (398 activities)
 - Automatic variance calculation
 - Exception highlighting (>10% variance)
@@ -476,7 +476,7 @@ Created comprehensive system documentation:
 
 ### Technical Challenges Overcome
 
-**1. Data Duplication Mystery**
+**1. Data Duplication**
 - **Problem:** Inconsistent transaction counts across sources
 - **Investigation:** Built correlation analysis in Power Query
 - **Discovery:** 87-94% overlap between LCDA and NBS
@@ -489,13 +489,13 @@ Created comprehensive system documentation:
 - **Result:** 92% improvement (2-minute refresh)
 
 **3. Complex Budget Structure**
-- **Problem:** 277 budget codes with nested components
+- **Problem:** Over 300 budget codes with nested components
 - **Challenge:** Activities contain multiple sub-activities
 - **Solution:** Created hierarchical mapping table
 - **Result:** Drill-down capability from component to transaction level
 
 **4. Unbudgeted Spending Discovery**
-- **Problem:** ~$7.8M in transactions without valid budget codes
+- **Problem:** ~$7.8M in transactions without valid budget codes using Manual entry (Prior to total digital migration to Tompro)
 - **Action:** Flagged as critical data quality issue
 - **Impact:** Required immediate management attention
 - **Resolution:** Systematic budget code assignment process implemented
@@ -553,7 +553,7 @@ Created comprehensive system documentation:
 **Role:** Finance Intern & BI Developer  
 **Organization:** AGCOM Malawi  
 **Email:** chizikoswith@gmail.com  
-**LinkedIn:** [linkedin.com/in/swithun-chiziko-94a21869](https://linkedin.com/in/swithun-chiziko-94a21869)
+**LinkedIn:** linkedin.com/in/swithun-chiziko-94a21869
 
 ---
 
@@ -580,7 +580,7 @@ This project demonstrates:
 
 ## 🏆 Recognition
 
-- Successfully deployed system used for World Bank monthly reporting
+- Successfully deployed system used for donor required monthly reporting
 - Identified critical data quality issues before external audit
 - Reduced reporting time by 35%, freeing team capacity
 - Enabled real-time budget monitoring for program management
