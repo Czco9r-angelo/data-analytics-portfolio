@@ -1,1 +1,689 @@
 
+# VIX and S&P500 Interaction Analysis During Market Crises
+## Advanced Time Series Econometrics: COVID-19 & Russia-Ukraine Conflict
+
+![R](https://img.shields.io/badge/R-276DC3?style=flat&logo=r&logoColor=white)
+![Econometrics](https://img.shields.io/badge/Econometrics-Time%20Series-blue)
+![Finance](https://img.shields.io/badge/Finance-Market%20Analysis-green)
+![Research](https://img.shields.io/badge/Research-Master's%20Thesis-orange)
+
+---
+
+## 📋 Project Overview
+
+**Title:** Assessing the Simultaneous Interactions Between VIX and S&P500 Returns: A Case of COVID-19 and Russia-Ukraine Conflict
+
+Advanced financial econometrics research analyzing the dynamic relationship between market volatility (VIX) and stock returns (S&P500) during two major global crises. This Master's capstone project employs sophisticated time series models including LASSO regression, Vector Autoregression (VAR), and Dynamic Conditional Correlation GJR-GARCH (DCC GJR-GARCH) to identify hedging opportunities and spill-over effects between volatility and returns.
+
+**Institution:** Curtin University  
+**Program:** Master of Applied Economics  
+**Course:** ECON6005  
+**Student ID:**
+**Submission Date:** June 2022
+
+---
+
+## 🎯 Research Objectives
+
+### Primary Research Question
+How do VIX (Volatility Index) and S&P500 returns simultaneously react to investor sentiment proxies and to each other during periods of extreme market stress?
+
+### Specific Objectives
+
+1. **Identify Significant Sentiment Factors:** Use LASSO regression to determine which sentiment proxies significantly predict VIX movements
+2. **Analyze Spill-over Effects:** Investigate the mutual interaction between VIX and S&P500 returns during crisis periods
+3. **Dynamic Correlation Analysis:** Employ DCC GJR-GARCH models to examine time-varying correlations between VIX and S&P500
+4. **Hedge Ratio Calculation:** Quantify potential hedging opportunities between VIX futures and S&P500
+5. **Crisis Comparison:** Compare market dynamics during COVID-19 pandemic vs. Russia-Ukraine conflict
+
+---
+
+## 📊 Dataset Description
+
+### Timeline Coverage
+- **Primary Period:** March 2020 - March 2022
+- **COVID-19 Lockdown:** March 10, 2020 - November 8, 2021 (US border closures)
+- **Russia-Ukraine Conflict:** February 24, 2022 onwards
+- **Frequency:** Daily data
+
+### Variables Used
+
+**Dependent Variables:**
+- **VIX (Volatility Index)** - CBOE Volatility Index measuring market implied volatility
+- **S&P500 Returns** - Daily log returns of S&P500 index
+
+**Sentiment Proxies (Independent Variables):**
+Based on Baker and Wurgler (2006, 2007) framework:
+
+1. **Share of Equity Issuances** - Proportion of equity vs. debt financing
+   - Source: Federal Reserve Economic Data (FRED)
+   - Frequency: Monthly (interpolated to daily)
+   
+2. **Closed-End Fund Discount** - Value-weighted discount of closed-end funds
+   - Calculated from 151 closed-end funds with available NAV data
+   - Formula: CEFD_t = (1/N_t) × Σ[(NAV_{i,t} - P_{i,t})/NAV_{i,t}]
+   
+3. **Market Turnover** - Average turnover ratio of S&P500 constituent stocks
+   - Calculated as: Volume / Total Shares Outstanding
+   - Source: WRDS Compustat North America
+   
+4. **Trade Volume** - Average trading volume across all S&P500 stocks
+   - Daily frequency
+   - Source: WRDS Compustat
+   
+5. **Number of IPOs** - Count of new common stock listings on NYSE and NASDAQ
+   - Source: WRDS SAS library
+   
+6. **Average First-Day IPO Returns** - Mean return of IPOs on listing day
+   - Calculated using opening and closing prices
+   
+7. **COVID Lockdown Dummy** - Binary variable (1 = lockdown period, 0 = otherwise)
+   - Lockdown: March 10, 2020 - November 8, 2021
+   
+8. **Russia-Ukraine Conflict Dummy** - Binary variable (1 = conflict period, 0 = otherwise)
+   - Start date: February 24, 2022
+
+**Data Sources:**
+- Federal Reserve Economic Data (FRED)
+- Wharton Research Data Services (WRDS)
+- Compustat North America
+- CBOE (VIX data)
+- Yahoo Finance (S&P500 data)
+
+---
+
+## 🔧 Methodology
+
+### 1. LASSO Regression (Feature Selection)
+
+**Purpose:** Identify which sentiment proxies significantly predict VIX movements
+
+**Model Specification:**
+```
+VIX_t = β₀ + Σ(β_i × X_{i,t}) + ε_t
+
+where X_i includes:
+- S&P500 returns
+- Market turnover  
+- Trade volume
+- Share of equity issuances
+- Number of IPOs
+- COVID lockdown dummy
+```
+
+**LASSO Objective Function:**
+```
+minimize: Σ(y_i - Σ(β_j × x_{ij}))² + λ × Σ|β_j|
+
+where:
+- λ = tuning parameter controlling shrinkage
+- L1 penalty shrinks coefficients toward zero
+- Non-significant variables have coefficients set to zero
+```
+
+**Implementation:**
+- Cross-validation to select optimal λ
+- Out-of-sample prediction testing
+- Mean Squared Error (MSE) evaluation
+
+### 2. Vector Autoregression (VAR)
+
+**Purpose:** Analyze impulse response functions between VIX and sentiment proxies
+
+**VAR Model:**
+```
+Y_t = A₁Y_{t-1} + A₂Y_{t-2} + ... + A_pY_{t-p} + ε_t
+
+where:
+- Y_t = [VIX_t, S&P500_t, Sentiment Variables]
+- A_i = coefficient matrices
+- p = optimal lag order
+```
+
+**Diagnostic Tests:**
+- Serial correlation test
+- Stationarity tests (ADF, KPSS)
+- Granger causality tests
+
+**Note:** VAR results showed serial correlation issues and were not included in final analysis.
+
+### 3. DCC GJR-GARCH Model
+
+**Purpose:** Model dynamic conditional correlation between VIX and S&P500 volatility
+
+**GJR-GARCH(1,1) Specification:**
+
+Univariate volatility equation:
+```
+σ²_t = ω + α × ε²_{t-1} + β × σ²_{t-1} + γ × I_{t-1} × ε²_{t-1}
+
+where:
+- σ²_t = conditional variance at time t
+- ω = intercept (unconditional variance)
+- α = ARCH parameter (impact of past shocks)
+- β = GARCH parameter (persistence of volatility)
+- γ = leverage effect (asymmetric volatility)
+- I_{t-1} = indicator function (1 if ε_{t-1} < 0, else 0)
+```
+
+**Leverage Effect Interpretation:**
+- γ = 0: Symmetric volatility
+- γ > 0: Negative shocks increase volatility more than positive shocks
+- γ < 0: Positive shocks increase volatility more (rare in equity markets)
+
+**DCC Component:**
+
+Dynamic correlation:
+```
+Q_t = (1 - a - b) × Q̄ + a × u_{t-1}u'_{t-1} + b × Q_{t-1}
+
+R_t = diag(Q_t)^{-1/2} × Q_t × diag(Q_t)^{-1/2}
+
+where:
+- Q_t = conditional covariance matrix
+- R_t = conditional correlation matrix
+- a, b = DCC parameters
+- u_t = standardized residuals
+```
+
+**Model Steps:**
+1. Test for stationarity (ADF test)
+2. Inspect volatility clustering
+3. Test for ARCH effects (ARCH-LM test)
+4. Estimate univariate GJR-GARCH(1,1) for each series
+5. Estimate DCC parameters
+6. Calculate conditional correlations over time
+7. Compute minimum variance hedge ratio
+
+---
+
+## 📈 Key Findings & Results
+
+### LASSO Regression Results
+
+**Significant Variables Identified:**
+
+| Variable | Coefficient | Significance |
+|----------|-------------|--------------|
+| **S&P500 Daily Returns** | Negative | *** |
+| **Market Turnover** | Positive | *** |
+| **Average Trade Volume** | Positive | ** |
+| **Share of Equity Issuances** | Positive | ** |
+| **Number of IPOs** | Negative | * |
+| **COVID Lockdown Dummy** | Positive | *** |
+
+**Model Performance:**
+- Out-of-sample prediction MSE: **29.05**
+- Successfully identified 6 significant sentiment factors
+- COVID lockdown period had significant positive effect on VIX
+
+**Key Insights:**
+1. **Negative S&P500-VIX Relationship:** Confirmed inverse relationship - when S&P500 returns decline, VIX increases
+2. **Turnover Effect:** Higher market turnover associated with increased volatility (panic trading)
+3. **Lockdown Impact:** COVID border closures significantly elevated implied volatility
+4. **IPO Effect:** More IPOs associated with lower VIX (market confidence signal)
+
+### DCC GJR-GARCH Results
+
+**Dynamic Conditional Correlation:**
+
+**Average Correlation:** **-0.80** between VIX and S&P500 conditional variances
+
+**Time-Varying Correlation Characteristics:**
+- Correlation remains consistently negative throughout the sample period
+- Strongest negative correlation (-0.85 to -0.90) during peak COVID uncertainty (March-April 2020)
+- Slightly weaker correlation (-0.70 to -0.75) during recovery phases
+- Correlation strengthens again during Russia-Ukraine conflict onset
+
+**Leverage Effects (GJR-GARCH γ parameter):**
+- **S&P500:** γ > 0 (significant) - Negative shocks increase volatility more than positive shocks
+- **VIX:** γ > 0 (significant) - Bad news increases implied volatility asymmetrically
+- Confirms asymmetric volatility in both series
+
+**Volatility Persistence:**
+- S&P500: α + β + 0.5γ ≈ 0.98 (high persistence)
+- VIX: α + β + 0.5γ ≈ 0.95 (high persistence)
+- Both series show strong volatility clustering
+
+### Hedging Implications
+
+**Hedge Ratio Calculation:**
+
+Based on DCC results:
+```
+Optimal Hedge Ratio = ρ_{VIX,S&P500} × (σ_{S&P500} / σ_{VIX})
+
+where:
+- ρ = dynamic conditional correlation
+- σ = conditional standard deviation
+```
+
+**Findings:**
+1. **Strong Negative Correlation (-0.80)** confirms hedging potential
+2. **Consistent Relationship:** Correlation remains stable across both crisis periods
+3. **VIX Futures as Hedge:** Can be used to hedge S&P500 equity positions
+4. **Hedge Effectiveness:** Approximately 64% variance reduction (ρ² = 0.64)
+
+**Practical Application:**
+- Long $1 million S&P500 → Short $800,000 VIX futures (approximate hedge ratio)
+- Rebalancing required as correlation fluctuates
+- More effective during high volatility periods
+
+---
+
+## 💡 Research Contributions
+
+### Novel Contributions to Literature
+
+1. **Lockdown Period Focus**
+   - First study to explicitly focus on U.S. border closure period (March 2020 - November 2021)
+   - Previous research examined pandemic onset or entire pandemic period
+   - Provides insights into sustained crisis effects vs. initial shock reactions
+
+2. **Dual Crisis Comparison**
+   - Unique comparison of COVID-19 pandemic vs. Russia-Ukraine conflict
+   - Different crisis types: health emergency vs. geopolitical conflict
+   - Examines whether investor response mechanisms persist across crisis types
+
+3. **DCC GJR-GARCH Application**
+   - Few studies have used DCC GJR-GARCH to examine VIX-S&P500 relationship during these crises
+   - Provides time-varying correlation analysis rather than static correlation
+   - Quantifies hedge ratio with daily granularity
+
+4. **Comprehensive Sentiment Analysis**
+   - Integrates Baker-Wurgler (2006) sentiment proxies with LASSO selection
+   - First application of LASSO for VIX sentiment factor identification in this context
+   - Identifies which sentiment measures matter most during crises
+
+5. **Practical Hedging Insights**
+   - Quantifies actual hedge ratios between VIX and S&P500
+   - Shows hedging relationship persists across different crisis types
+   - Provides actionable insights for risk management
+
+---
+
+## 📚 Literature Context
+
+### Building on Previous Research
+
+**COVID-19 and Market Volatility:**
+- **Baek et al. (2020):** COVID-19 death reports increased VIX
+- **Rahman et al. (2021):** S&P500 positively associated with recoveries
+- **This study:** Extends analysis through full lockdown period and into Russia-Ukraine conflict
+
+**VIX and Sentiment:**
+- **Smales (2017):** VIX as preferred market sentiment measure
+- **Wang et al. (2021):** VIX negatively impacts S&P500 returns
+- **This study:** Uses LASSO to identify most significant sentiment factors
+
+**GARCH Modeling of VIX:**
+- **Liu and Quao (2015):** TGARCH for VIX forecasting
+- **Bilyk et al. (2020):** GJR-GARCH outperforms standard GARCH for VIX
+- **This study:** Applies DCC GJR-GARCH for correlation analysis
+
+**Hedging Applications:**
+- **Dima et al. (2021):** Investors switch to volatility-insulating assets during crises
+- **This study:** Quantifies specific hedge ratios and shows persistence across crises
+
+---
+
+## 🔬 Technical Implementation
+
+### Software & Tools
+
+**Primary Software:**
+- R 4.0+
+- RStudio
+
+**Key R Packages:**
+```r
+# Data manipulation
+library(readxl)
+library(dplyr)
+
+# Time series analysis  
+library(tseries)        # ADF test, ARCH test
+library(vars)           # VAR models
+library(urca)           # Unit root tests
+
+# GARCH modeling
+library(rugarch)        # Univariate GARCH
+library(rmgarch)        # Multivariate GARCH (DCC)
+
+# LASSO regression
+library(glmnet)         # LASSO implementation
+
+# Visualization
+library(ggplot2)
+library(gridExtra)
+```
+
+### Data Processing Pipeline
+
+**Step 1: Data Collection**
+```r
+# Import from multiple sources
+sp500_data <- read.csv("sp500_daily.csv")
+vix_data <- read.csv("vix_daily.csv")
+fred_data <- read.csv("fred_issuances.csv")
+wrds_data <- read.csv("wrds_compustat.csv")
+```
+
+**Step 2: Data Cleaning**
+```r
+# Handle missing values
+# Interpolate monthly to daily for equity share
+# Remove holidays and non-trading days
+# Synchronize dates across all series
+```
+
+**Step 3: Feature Engineering**
+```r
+# Calculate returns: log(P_t / P_{t-1})
+# Create dummy variables for crises
+# Calculate CEFD from closed-end fund data
+# Compute market turnover ratios
+```
+
+**Step 4: Stationarity Testing**
+```r
+# Augmented Dickey-Fuller test
+# KPSS test
+# First differencing if needed
+```
+
+**Step 5: LASSO Regression**
+```r
+# Cross-validation for λ selection
+cv.lasso <- cv.glmnet(X, y, alpha=1, nfolds=10)
+lambda.optimal <- cv.lasso$lambda.min
+
+# Fit final model
+lasso.model <- glmnet(X, y, alpha=1, lambda=lambda.optimal)
+```
+
+**Step 6: GJR-GARCH Estimation**
+```r
+# Specify univariate GJR-GARCH(1,1)
+spec <- ugarchspec(
+  variance.model = list(model="gjrGARCH", garchOrder=c(1,1)),
+  mean.model = list(armaOrder=c(0,0))
+)
+
+# Estimate model
+fit <- ugarchfit(spec, data)
+```
+
+**Step 7: DCC Estimation**
+```r
+# Specify DCC model
+dcc.spec <- dccspec(
+  uspec = multispec(replicate(2, spec)),
+  dccOrder = c(1,1),
+  distribution = "mvnorm"
+)
+
+# Estimate DCC
+dcc.fit <- dccfit(dcc.spec, data=returns)
+
+# Extract conditional correlations
+dcc.corr <- rcor(dcc.fit)
+```
+
+---
+
+## 📊 Visualizations
+
+### Key Figures in Analysis
+
+1. **Scatter Plot: Share of Equity Issuances vs. Returns**
+   - Shows positive relationship during high issuance periods
+   - Returns decline during low equity share periods
+
+2. **Time Series: Share of Equity Issuances**
+   - Rise in debt issues following COVID closures
+   - Recovery in equity share post-2020 election
+
+3. **Scatter Plot: Trade Volume vs. VIX**
+   - Positive relationship: higher volume → higher volatility
+   - Confirms liquidity injection increases market uncertainty
+
+4. **Time Series: Market Turnover**
+   - Peak at March 2020 COVID onset
+   - Major dip at December 2020
+   - Subsequent fluctuations during Russia-Ukraine conflict
+
+5. **DCC Time Series Plot**
+   - Dynamic correlation between VIX and S&P500 over time
+   - Shows strengthening/weakening of relationship through crises
+   - Average correlation: -0.80
+
+6. **Conditional Variance Plots**
+   - S&P500 conditional volatility spikes
+   - VIX conditional volatility clustering
+   - Clear volatility persistence patterns
+
+---
+
+## 🎓 Skills Demonstrated
+
+### Econometric Techniques
+- ✅ LASSO regression for feature selection
+- ✅ Vector Autoregression (VAR) modeling
+- ✅ Unit root testing (ADF, KPSS)
+- ✅ ARCH effect testing
+- ✅ Univariate GARCH modeling
+- ✅ Multivariate GARCH (DCC)
+- ✅ GJR-GARCH (asymmetric volatility)
+- ✅ Time series analysis
+- ✅ Impulse response functions
+- ✅ Granger causality testing
+
+### Financial Knowledge
+- ✅ VIX index interpretation
+- ✅ Investor sentiment proxies
+- ✅ Hedging strategies
+- ✅ Risk management applications
+- ✅ Market microstructure
+- ✅ Crisis period analysis
+- ✅ Portfolio theory
+
+### Statistical Methods
+- ✅ Cross-validation
+- ✅ Out-of-sample prediction
+- ✅ Model diagnostics
+- ✅ Hypothesis testing
+- ✅ Correlation analysis
+- ✅ Variance modeling
+
+### Research Skills
+- ✅ Literature review synthesis
+- ✅ Research question formulation
+- ✅ Methodology design
+- ✅ Data collection from multiple sources
+- ✅ Results interpretation
+- ✅ Academic writing
+- ✅ Citation management
+
+### R Programming
+- ✅ Advanced time series packages
+- ✅ GARCH model estimation
+- ✅ Data manipulation
+- ✅ Visualization
+- ✅ Statistical testing
+- ✅ Function writing
+- ✅ Reproducible research
+
+---
+
+## 🏆 Key Achievements
+
+✅ **Sophisticated Econometric Analysis** - Applied multiple advanced time series techniques  
+✅ **Novel Research Contribution** - First study of U.S. border closure period explicitly  
+✅ **Practical Applications** - Quantified hedge ratios with actionable insights  
+✅ **Comprehensive Data Integration** - Combined data from 5+ sources  
+✅ **Strong Negative Correlation** - Confirmed -0.80 VIX-S&P500 correlation  
+✅ **Significant Findings** - Identified 6 significant sentiment factors via LASSO  
+✅ **Crisis Comparison** - Showed hedging relationship persists across crisis types  
+✅ **Academic Rigor** - Master's thesis quality research with peer-reviewed methodology  
+
+---
+
+## 📈 Practical Implications
+
+### For Investors
+
+**Risk Management:**
+- Use VIX futures to hedge equity portfolios during crises
+- Hedge ratio of approximately 0.80 suggested by correlation analysis
+- More effective hedging during high volatility periods
+
+**Sentiment Monitoring:**
+- Monitor market turnover and trade volume for volatility signals
+- Track equity issuance share as confidence indicator
+- IPO activity provides insight into market sentiment
+
+### For Portfolio Managers
+
+**Dynamic Hedging:**
+- Adjust hedge ratios based on DCC correlation estimates
+- Rebalance more frequently during crisis periods
+- Consider time-varying nature of VIX-S&P500 relationship
+
+**Crisis Response:**
+- Hedging relationship persists across different crisis types
+- Prepare crisis playbook based on historical correlations
+- VIX futures provide consistent hedge across shocks
+
+### For Policymakers
+
+**Market Stability:**
+- COVID lockdown policies had significant impact on market volatility
+- Border closure period showed sustained elevated VIX
+- Policy announcements affect investor sentiment measurably
+
+---
+
+## 🔮 Future Research Directions
+
+### Potential Extensions
+
+1. **Extended Timeline**
+   - Include post-Russia-Ukraine conflict recovery period
+   - Analyze long-term effects of both crises
+   - Compare to historical crises (2008 GFC, 2001 Dot-com)
+
+2. **International Comparison**
+   - Extend to international volatility indices (VSTOXX, VKOSPI)
+   - Compare U.S. vs. European vs. Asian market responses
+   - Examine cross-market spill-over effects
+
+3. **Alternative Sentiment Measures**
+   - Incorporate social media sentiment (Twitter, Reddit)
+   - Use text mining on news articles
+   - Include Google Trends data
+
+4. **Advanced Modeling**
+   - Implement regime-switching GARCH models
+   - Apply machine learning for volatility forecasting
+   - Use copula models for dependence structure
+
+5. **Options Market Analysis**
+   - Analyze VIX futures term structure
+   - Study VIX options implied volatility
+   - Examine variance risk premium
+
+---
+
+## 📁 Project Structure
+
+```
+vix-sp500-crisis-analysis/
+├── README.md                      # This file
+├── report/
+│   └── ECON6005_Final_Report.pdf  # Complete academic report
+├── data/
+│   ├── raw/
+│   │   ├── sp500_daily.csv
+│   │   ├── vix_daily.csv
+│   │   ├── fred_data.csv
+│   │   └── wrds_compustat.csv
+│   └── processed/
+│       ├── sentiment_proxies.csv
+│       └── combined_dataset.csv
+├── src/
+│   ├── 01_data_collection.R
+│   ├── 02_data_cleaning.R
+│   ├── 03_lasso_regression.R
+│   ├── 04_var_analysis.R
+│   ├── 05_gjr_garch.R
+│   ├── 06_dcc_estimation.R
+│   └── 07_visualization.R
+├── results/
+│   ├── lasso_coefficients.csv
+│   ├── dcc_correlations.csv
+│   ├── hedge_ratios.csv
+│   └── figures/
+│       ├── equity_share_scatter.png
+│       ├── volume_vix_scatter.png
+│       ├── dcc_timeseries.png
+│       └── conditional_variance.png
+└── presentation/
+    └── presentation_slides.pdf
+```
+
+---
+
+## 📧 Contact & Collaboration
+
+**Author:** Swithun M. Chiziko  
+**Degree:** Master of Predictive Analytics
+**Institution:** Curtin University  
+**Email:**
+**LinkedIn:** [linkedin.com/in/swithun-chiziko-94a21869](https://linkedin.com/in/swithun-chiziko-94a21869)  
+**GitHub:** [github.com/swithun-chiziko](https://github.com/swithun-chiziko)
+
+**Presentation Materials:** Available
+
+---
+
+## 📄 Citation
+
+If you use this research or methodology, please cite:
+
+```
+Chiziko, S. M. (2022). Assessing the Simultaneous Interactions Between VIX 
+and S&P500 Returns: A Case of COVID-19 and Russia-Ukraine Conflict. 
+Master's Thesis, Curtin University.
+```
+
+---
+
+## 📚 References
+
+**Key Citations:**
+
+- Baker, M., & Wurgler, J. (2006). Investor sentiment and the cross‐section of stock returns. *The Journal of Finance*, 61(4), 1645-1680.
+- Baker, M., & Wurgler, J. (2007). Investor sentiment in the stock market. *Journal of Economic Perspectives*, 21(2), 129-152.
+- Baek, S., Mohanty, S. K., & Glambosky, M. (2020). COVID-19 and stock market volatility: An industry level analysis. *Finance Research Letters*, 37, 101748.
+- Bilyk, O., Stetsyuk, I., & Yapotynsky, R. (2020). Forecasting VIX with GARCH models. *Ekonomicky Casopis*, 68(1), 21-44.
+- Dima, B., Dima, Ș. M., & Ioan, R. (2021). Remarks on the behaviour of financial market efficiency during the COVID-19 pandemic. *Economic Research*, 34(1), 1555-1573.
+- Glosten, L. R., Jagannathan, R., & Runkle, D. E. (1993). On the relation between the expected value and the volatility of the nominal excess return on stocks. *The Journal of Finance*, 48(5), 1779-1801.
+- Smales, L. A. (2017). The importance of fear: investor sentiment and stock market returns. *Applied Economics*, 49(34), 3395-3421.
+- Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. *Journal of the Royal Statistical Society: Series B*, 58(1), 267-288.
+- Wang, J., Lu, X., He, F., & Ma, F. (2020). Which popular predictor is more useful to forecast international stock markets during the coronavirus pandemic: VIX vs EPU? *International Review of Financial Analysis*, 72, 101596.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Dr. Zhiyue Sun** - Research supervision and guidance
+- **Curtin University** - Data access and resources
+- **Federal Reserve** - FRED data access
+- **Wharton Research Data Services** - Compustat data access
+
+---
+
+**Last Updated:** June 2022  
+**Project Status:** ✅ Completed | 🎓 Master's Thesis | 📊 Financial Econometrics  
+**Skills:** Time Series Analysis | GARCH Modeling | LASSO Regression | Financial Markets | R Programming
