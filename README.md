@@ -74,7 +74,7 @@ Dashboard examples and visual analytics
 
 ## 📬 Get in Touch
 
-- **Email:** chizikoswith@gmail.com
+- **Email:** 
 - **LinkedIn:** [linkedin.com/in/swithun-chiziko-94a21869](https://linkedin.com/in/swithun-chiziko-94a21869)
 - **Location:** 
 - **Portfolio:** [View my complete portfolio](https://github.com/Czco9r-angelo/data-analytics-portfolio)
